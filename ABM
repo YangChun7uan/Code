@@ -1,0 +1,47 @@
+//ABM本地编译程序：
+1、替换ABM库的位置
+perl -i -p -e 's|(?=\/lib\W)\/lib|\/\$\(LIBDIR\)|g'
+
+2、删除某一行
+perl -i -p -e 'print "XXX" if /REG/'
+
+
+//VIM疑杂技巧
+1、如何去除文件中符号
+原文地址： http://www.vim.org/tips/tip.php?tip_id=26
+
+如果你经常编辑不同系统环境下的文件，那么你可能在打开文件时经常发现 ^M 这样的符号. 
+比如: 
+
+------------------------------------------------------------------ 
+import java.util.Hashtable; ^M 
+import java.util.Properties; ^Mimport java.io.IOException; 
+import org.xml.sax.AttributeList; ^M 
+import org.xml.sax.HandlerBase; ^Mimport org.xml.sax.SAXException; 
+
+/**^M 
+  * XMLHandler: This class parses the elements contained^M 
+  * within a XML message and builds a Hashtable^M 
+
+[snip] 
+------------------------------------------------------------------ 
+
+注意有些程序在插入换行符时所进行的操作并不是一致的，有的时候用一个carrage回车键加一个^M作为换行符，而有些时候仅有^M而没有carrage回车键（从而两行变成一行）。我们使用两个步骤解决这个问题：
+
+1. 去掉所有多余的^M: 
+
+:%s/^M$//g 
+
+注意命令中的^M 是通过键入"CTRL-V CTRL-M"生成的！
+该命令的意思是 “去掉所有行末的^M”
+
+2. 处理仅有^M而没有carrage回车键的情况: 
+
+:%s/^M/ /g 
+
+同样注意命令中的^M 是通过键入"CTRL-V CTRL-M"生成的！
+该命令的意思是 “将仅有^M而没有换行符的地方替换成换行符”。
+
+好了，你将看到一个清爽的文件。如果你经常使用这些命令，你可以将它们映射成快捷键。
+
+输入:help ffs 以获取跟多的关于文件格式的信息。

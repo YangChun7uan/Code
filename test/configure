@@ -1,0 +1,131 @@
+#!/usr/bin/perl
+$makedef = q/rules/;
+$release = q/64/;
+$debug = q/-O2 /;
+$cpp = q//;
+$cc = q//;
+$cppflag = q//;
+$cflag = q//;
+$inc = q//;
+$ar = q/ar/;
+$arflag = q//;
+$makeso = q//;
+$syslib = q//;
+$sys_inc = q//;
+$sun = q/no/;
+$prefix = ".";
+
+#help() if @ARGV == 0;
+
+for (@ARGV) {
+	if (/^--prefix=(.*)/) {
+		$prefix = $1;
+	} elsif (/^--with-64bit$/) {
+		$release = 64;
+	} elsif (/^--with-32bit$/) {
+		$release = 32;
+	} elsif (/^--debug$/) {
+		$debug = "-D_DEBUG -g"
+	} elsif (/^--help$/) {
+		&help;
+	} else {
+		print qq{Invalid $_\n};
+		print qq{type ./configure --help\n};
+		print qq/Remember to actually read the INSTALL file.\n/;
+		exit;
+	}
+}
+
+$_ = `uname -s -r`;
+
+if (/^SunOS 5/) {
+	#$debug =~ s/\-O2//g;
+	$cpp = q/CC /;
+	$cc = q/cc /;
+	$ar = "$cpp" ;
+	if ($release eq "64") {
+		$cpp = "CC -xarch=v9";
+		$cc  = "cc -xarch=v9";
+	}
+	$cppflag = " $debug -DUSE_SIMPLE_SINGLETON -D_REENTRANT -DSUNOS";
+	$cflag = "-DSUNOS";
+	$arflag = "$debug -xar -o";
+	$syslib = " -lm -lc -ldl -lpthread ";
+	$sys_inc = "-I/usr/include -I/opt/SUNWspro/WS6U2/include/CC -I/opt/SUNWspro/WS6U2/include/CC/Cstd";
+	$makeso = "$cpp -G";
+	$sun = q/yes/;
+} elsif (/^Linux/) {
+	$cpp = "g++ -fPIC";
+	$cc = "gcc ";
+	$cppflag = "-Wall $debug -m$release -DLINUX";
+	$cflag = "-Wall $debug -m$release -DSUNOS";
+	$syslib = " -lm -lc -ldl ";
+	$arflag = "rv ";
+	$makeso = "ld -G";
+	$os = "linux";
+} elsif (/^AIX/) {
+	$cpp = "xlC ";
+	$cc = "xlc ";
+	if ($debug =~ m/\b\-g\b/) {
+		$debug = "$debug -qfullpath -qlinedebug -qdbxextra";
+	}
+	$cppflag = "$debug -q$release -DAIX";
+	$cflag = "$debug -q$release -DAIX";
+	$syslib = " -lm -lc -ldl -ltli -lC -lpthreads";
+	$arflag = "-rv -X$release";
+	$makeso = "$cpp $cppflag -G -qmkshrobj";
+	$os = "aix";
+} else {
+	print "Not implement. :)\n";
+	exit;
+}
+
+open(FH, ">$makedef") or die $!;
+
+print FH <<EOF;
+# $makedef
+os = $os
+cpp = $cpp
+cc = $cc
+cppflag = $cppflag
+cflag = $cflag
+makeso = $makeso
+syslib = $syslib
+inc = $inc -I. -I./include -I../include
+ar = $ar
+arflag = $arflag
+sys_inc = $sys_inc
+release = $release
+bits = $release
+sun = $sun
+prefix = $prefix
+prefix_lib = "$prefix/lib"
+prefix_inc = "$prefix/include"
+
+.PRECIOUS:%.cpp %.c
+.SUFFIXES:  .c .o .cpp .cc .cxx
+
+.cpp.o:
+	$cpp $cppflag -c -o \$*.o \$< \$(ext_inc)
+.cc.o:
+	$cpp $cppflag -c -o \$*.o \$< \$(ext_inc)
+.cxx.o:
+	$cpp $cppflag -c -o \$*.o \$< \$(ext_inc)
+.c.o:
+	$cpp $cppflag -c -o \$*.o \$< \$(ext_inc)
+EOF
+
+
+print "configure done.\n";
+
+sub help {
+	print qq{
+./configure [--with-32bit | --with-64bit] [--debug] [--prefix=$prefix]
+            --with-32bit     32位编译
+            --with-64bit     64位编译
+            --debug          代码调试选项
+            --prefix=        指定安装目录, 默认为 $prefix
+\n};
+	exit;
+}
+

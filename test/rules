@@ -1,0 +1,30 @@
+# rules
+os = aix
+cpp = xlC 
+cc = xlc 
+cppflag = -O2  -q64 -DAIX
+cflag = -O2  -q64 -DAIX
+makeso = xlC  -O2  -q64 -DAIX -G -qmkshrobj
+syslib =  -lm -lc -ldl -ltli -lC -lpthreads
+inc =  -I. -I./include -I../include
+ar = ar
+arflag = -rv -X64
+sys_inc = 
+release = 64
+bits = 64
+sun = no
+prefix = .
+prefix_lib = "./lib"
+prefix_inc = "./include"
+
+.PRECIOUS:%.cpp %.c
+.SUFFIXES:  .c .o .cpp .cc .cxx
+
+.cpp.o:
+	xlC  -O2  -q64 -DAIX -c -o $*.o $< $(ext_inc)
+.cc.o:
+	xlC  -O2  -q64 -DAIX -c -o $*.o $< $(ext_inc)
+.cxx.o:
+	xlC  -O2  -q64 -DAIX -c -o $*.o $< $(ext_inc)
+.c.o:
+	xlC  -O2  -q64 -DAIX -c -o $*.o $< $(ext_inc)

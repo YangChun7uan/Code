@@ -1,0 +1,77 @@
+1、SHELL命令解释。
+shell通过解析输入的命令，输出内核的系统调用。
+
+2、LINUX中的IO系统
+系统的IO是基本功能，其满足计算机和现实世界的交互。在LINUX中IO的抽象是通过文件来实现的。
+2.1、LINUX中一切皆是文件。
+2.2、LINUX中文件的映射关系是通过文件描述符(整数值)
+2.3、和文件交互是通过OPEN来实现
+2.4、Any Process 默认打开三个文件描述符。0:输入（键盘）1:输出（屏幕）2：错误输出（屏幕）
+2.5、文件的重定向操作:
+解释：获取从文件、程序、 命令等不同渠道的输出，然后再将这些捕获的内容输出到文件、程序或命令中去。
+    2.5.1、SHELL中的文件重定向操作:
+
+    1、打开文件描述符:将某个文件打开指定到相应的文件描述符:
+	exec N>fileName
+	exec 3>&1
+	
+    2、关闭文件描述符:关闭掉文件描述符N
+	exec N<&- 关闭输入描述符
+	exec N>&- 关闭输出描述符
+	Closing File Descriptors
+	
+	n<&-
+	Close input file descriptor n.
+	
+	0<&-, <&-
+	Close stdin.
+	
+	n>&-
+	Close output file descriptor n.
+	
+	1>&-, >&-
+	Close stdout
+
+
+    在文件末尾新增内容:>> ;只适用于 N>>FileName,不能将FileName替换为文件描述符
+    重定向输出:
+	M>N: 适用于M是文件描述符、N是文件名
+	M>&N:适用于M是文件描述符，N是文件描述符
+	当M没有指定时，默认是1，标准输出
+    重定向输入:
+	M<N: 适用于M是文件描述符、N是文件名
+	M<N:适用于M是文件描述符，N是文件描述符
+	当M没有指定时，默认是0，标准输入
+	&>filename
+      		# Redirect both stdout and stderr to file "filename."
+      		# This operator is now functional, as of Bash 4, final release.
+ 	[j]<>filename
+ 	     #  Open file "filename" for reading and writing,
+ 	     #+ and assign file descriptor "j" to it.
+ 	     #  If "filename" does not exist, create it.
+ 	     #  If file descriptor "j" is not specified, default to fd 0, stdin.
+ 	     #
+ 	     #  An application of this is writing at a specified place in a file. 
+ 	     echo 1234567890 > File    # Write string to "File".
+ 	     exec 3<> File             # Open "File" and assign fd 3 to it.
+ 	     read -n 4 <&3             # Read only 4 characters.
+ 	     echo -n . >&3             # Write a decimal point there.
+ 	     exec 3>&-                 # Close fd 3.
+ 	     cat File                  # ==> 1234.67890
+ 	     #  Random access, by golly.
+
+	 Multiple output streams may be redirected to one file.
+	 ls -yz >> command.log 2>&1
+	 #  Capture result of illegal options "yz" in file "command.log."
+	 #  Because stderr is redirected to the file,
+	 #+ any error messages will also be there.
+	 
+	 #  Note, however, that the following does *not* give the same result.
+	 ls -yz 2>&1 >> command.log
+	 #  Outputs an error message, but does not write to file.
+	 #  More precisely, the command output (in this case, null)
+	 #+ writes to the file, but the error message goes only to stdout.
+	 
+	 #  If redirecting both stdout and stderr,
+	 #+ the order of the commands makes a difference.
+	

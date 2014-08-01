@@ -1,0 +1,50 @@
+* Tasks
+** DONE Python Get Start
+   CLOSED: [2014-07-30 Wed 13:26]
+** TODO Python知识点
+   SCHEDULED: <2014-08-05 Tue>
+** TODO Python学习笔记
+
+
+* Python Get Start
+
+
+* Python Get Start
+  刚开始使用Python时，我们需要[[http://docs.python-guide.org/en/latest/starting/install/linux/][Install Python On linux]],同时会安装一些自动化处理环境变量设置、获取python的module的脚本。
+
+* Python 2C8
+**  Python的特点
+*** 面向对象
+*** [[fn:2][Dynamic Type]]
+** 常用数据结构
+** 包和模块使用
+*** 包和模块的关系
+  包和模块的[[http://arganzheng.iteye.com/blog/986301][关系]]:
+  Python provides a very straightforwar [[fn:1][packaging]], which is simply an extension of the module mechanism to a directory.
+*** 模块查找路径
+  当导入模块时，PVM会从后台的一系列路径中去搜索模块并进行加载。
+  1.在当前目录下查找；
+  2.在环境变量PYTHONPATH中指定的路径列表中依次搜索；
+  3.在python的安装路径中搜索。
+  上述的路径信息可以通过sys.path来查看
+  >>>import sys
+  >>>print(sys.path)
+** 函数的定义
+
+
+* fn:1
+Any directory with an __init__.py file is considered a Python package. The different modules in the package are imported in a similar manner as plain modules, but with a special behavior for the __init__.py file, which is used to gather all package-wide definitions.
+A file modu.py in the directory pack/ is imported with the statement import pack.modu. This statement will look for an __init__.py file in pack, execute all of its top-level statements. Then it will look for a file named pack/modu.py and execute all of its top-level statements. After these operations, any variable, function, or class defined in modu.py is available in the pack.modu namespace.
+A commonly seen issue is to add too much code to __init__.py files. When the project complexity grows, there may be sub-packages and sub-sub-packages in a deep directory structure. In this case, importing a single item from a sub-sub-package will require executing all __init__.py files met while traversing the tree.
+Leaving an __init__.py file empty is considered normal and even a good practice, if the package’s modules and sub-packages do not need to share any code.
+Lastly, a convenient syntax is available for importing deeply nested packages: import very.deep.module as mod. This allows you to use mod in place of the verbose repetition of very.deep.module.
+
+* fn:2
+Python is said to be dynamically typed, which means that variables do not have a fixed type. In fact, in Python, variables are very different from what they are in many other languages, specifically statically-typed languages. Variables are not a segment of the computer’s memory where some value is written, they are ‘tags’ or ‘names’ pointing to objects. It is therefore possible for the variable ‘a’ to be set to the value 1, then to the value ‘a string’, then to a function.
+The dynamic typing of Python is often considered to be a weakness, and indeed it can lead to complexities and hard-to-debug code. Something named ‘a’ can be set to many different things, and the developer or the maintainer needs to track this name in the code to make sure it has not been set to a completely unrelated object.
+Some guidelines help to avoid this issue:
+Avoid using the same variable name for different things.
+
+
+* Reference
+  1.[[http://docs.python-guide.org/][python guide]]
